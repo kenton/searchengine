@@ -6,7 +6,7 @@ describe Crawler do
     crawler = Crawler.new(url_file)
     crawler.urls.should == ["http://news.google.com", "http://cnn.com", "http://loyola.edu"]
   end
-  
+
   it "sets the USER_AGENT" do
     robot = Robots.new Crawler::USER_AGENT
     crawler = Crawler.new
@@ -28,23 +28,90 @@ describe Crawler do
       crawler.allowed_to_crawl?(page).should == false
     end
   end
-  
-  describe "parse_url" do
-    it "parses the URLs for each page that can be added to the index" do
-      # stub Nokogiri call here...
-      # parse a page:
-      #   page = Nokogiri::HTML(open("http://kentonnewby.com"))
-      # all links:
-      #   page.css('a')
-      # external links:  
-      #   links.map { |l| l.attributes["href"].value }.select { |l| l.match(/^http:*/) }
-      url = "http://example.com"
-      array_of_urls = [
-                       "http://one.example.com",
-                       "http://two.example.com",
-                       "http://three.example.com"
+     # stub Nokogiri call here...
+     # get HTML page:
+     #   webpage = Net::HTTP.get(URI("http://kentonnewby.com"))
+     # parse a page:
+     #   page = Nokogiri::HTML(webpage)
+     # all links:
+     #   page.css('a')
+     # external links:
+     #   links.map { |l| l.attributes["href"].value }.select { |l| l.match(/^http:*/) }
+  describe "parse_url(url)", :vcr do
+
+    before(:each) do
+      @url_to_request = "http://kentonnewby.com"
+      @crawler = Crawler.new
+    end
+
+    it "parses the URL for a page that can be added to the index and returns a list of external links" do
+      array_of_urls = ["http://kentonnewby.com/", 
+                       "http://kentonnewby.com/about", 
+                       "http://kentonnewby.com/profile", 
+                       "http://kentonnewby.com/bucket-list", 
+                       "http://kentonnewby.com/contact", 
+                       "http://kentonnewby.com/", 
+                       "http://kentonnewby.com/", 
+                       "http://kentonnewby.com/blog/categories/web-development/", 
+                       "http://kentonnewby.com/blog/categories/ruby/",
+                       "http://kentonnewby.com/blog/categories/rails/",
+                       "http://kentonnewby.com/blog/categories/jquery/",
+                       "http://kentonnewby.com/blog/categories/backbonejs/",
+                       "http://kentonnewby.com/blog/categories/nodejs/",
+                       "http://kentonnewby.com/blog/categories/mobile-development/",
+                       "http://kentonnewby.com/blog/categories/ios/",
+                       "http://kentonnewby.com/blog/categories/mobile-web/",
+                       "http://kentonnewby.com/blog/categories/business/",
+                       "http://kentonnewby.com/blog/categories/marketing/",
+                       "http://kentonnewby.com/blog/categories/sales/",
+                       "http://kentonnewby.com/blog/categories/lifestyle-design/",
+                       "http://kentonnewby.com/blog/categories/inner-game/",
+                       "http://kentonnewby.com/blog/categories/productivity/",
+                       "http://kentonnewby.com/blog/categories/inspirational/",
+                       "http://kentonnewby.com/blog/categories/books/",
+                       "http://feeds.feedburner.com/kentonnewby",
+                       "http://twitter.com/kentonnewby",
+                       "http://kentonnewby.com/quick-git-summaries-using-git-shortlog",
+                       "http://kentonnewby.com/blog/categories/git/",
+                       "http://kentonnewby.com/quick-git-summaries-using-git-shortlog",
+                       "http://kentonnewby.com/benefits-of-tdd",
+                       "http://kentonnewby.com/blog/categories/rails/",
+                       "http://kentonnewby.com/blog/categories/ruby/",
+                       "http://kentonnewby.com/benefits-of-tdd",
+                       "http://kentonnewby.com/are-you-a-producer-or-a-consumer",
+                       "http://kentonnewby.com/blog/categories/inner-game/",
+                       "http://kentonnewby.com/are-you-a-producer-or-a-consumer",
+                       "http://kentonnewby.com/amending-last-git-commit",
+                       "http://kentonnewby.com/blog/categories/git/",
+                       "http://kentonnewby.com/amending-last-git-commit",
+                       "http://kentonnewby.com/ios-development-workflow",
+                       "http://kentonnewby.com/blog/categories/ios/",
+                       "http://kentonnewby.com/blog/categories/mobile-development/",
+                       "http://kentonnewby.com/ios-development-workflow",
+                       "http://kentonnewby.com/page/2/",
+                       "http://kentonnewby.com/blog/archives",
+                       "http://kentonnewby.com/about",
+                       "http://codecanyon.net?ref=kentonnewby",
+                       "http://themeforest.net?ref=kentonnewby",
+                       "http://f52f6a2culudsoi0rj6a0h3rbu.hop.clickbank.net/",
+                       "http://www.mailchimp.com",
+                       "http://www.railscasts.com",
+                       "http://www.peepcode.com",
+                       "http://www.destroyallsoftware.com/screencasts",
+                       "http://www.practicingruby.com",
+                       "http://www.startupsfortherestofus.com/",
+                       "http://kentonnewby.com/privacy",
+                       "http://kentonnewby.com/earnings-disclaimer",
+                       "http://kentonnewby.com/terms-of-use",
+                       "http://kentonnewby.com/sitemap.xml",
+                       "http://octopress.org"
                       ]
-      crawler.parse_page(url).should == array_of_urls
+
+      @crawler.parse_page(@url_to_request).should == array_of_urls
+    end
+
+    it "adds hostname to relative links relative links" do
+      @crawler.parse_page(@url_to_request).should include("http://kentonnewby.com/about")
     end
   end
 
