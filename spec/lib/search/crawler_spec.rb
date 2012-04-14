@@ -40,8 +40,14 @@ describe Crawler do
   describe "parse_url(url)", :vcr do
 
     before(:each) do
-      @url_to_request = "http://kentonnewby.com"
+      @url = "http://kentonnewby.com"
       @crawler = Crawler.new
+    end
+
+    it "returns empty unless requested URL allows crawler to crawl page" do
+      @crawler.stub(:allowed_to_crawl?).and_return(false)
+
+      @crawler.links_on_page(@url).should == []
     end
 
     it "parses the URL for a page that can be added to the index and returns a list of external links" do
@@ -107,11 +113,11 @@ describe Crawler do
                        "http://octopress.org"
                       ]
 
-      @crawler.parse_page(@url_to_request).should == array_of_urls
+      @crawler.links_on_page(@url).should == array_of_urls
     end
 
     it "adds hostname to relative links relative links" do
-      @crawler.parse_page(@url_to_request).should include("http://kentonnewby.com/about")
+      @crawler.links_on_page(@url).should include("http://kentonnewby.com/about")
     end
   end
 

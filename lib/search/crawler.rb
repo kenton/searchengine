@@ -18,15 +18,16 @@ class Crawler
     robot.allowed?(page)
   end
 
-  def parse_page(url_to_request)
-    webpage = Net::HTTP.get(URI(url_to_request))
+  def links_on_page(requested_url)
+    return [] unless allowed_to_crawl?(requested_url)
+
+    webpage = Net::HTTP.get(URI(requested_url))
     page = Nokogiri::HTML(webpage)
     all_anchor_tags = page.css('a')
     all_links = all_anchor_tags.map { |tag| tag.attributes["href"].value}
-    #absolute_links = all_links.select { |link| link.match(/^https?:.*/) }
 
     all_links.select do |link| 
-      link.gsub!(/^\//, url_to_request + "/") if link.match(/^\/.*/)
+      link.gsub!(/^\//, requested_url + "/") if link.match(/^\/.*/)
     end
 
     all_links
