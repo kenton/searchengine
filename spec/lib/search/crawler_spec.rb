@@ -29,15 +29,28 @@ describe Crawler do
     end
   end
   
-  describe "check urls" do
-    #it "retrieves each url that can be added to the index" do
-      #crawler.check_urls.should == 
-    #end
+  describe "parse_url" do
+    it "parses the URLs for each page that can be added to the index" do
+      # stub Nokogiri call here...
+      # parse a page:
+      #   page = Nokogiri::HTML(open("http://kentonnewby.com"))
+      # all links:
+      #   page.css('a')
+      # external links:  
+      #   links.map { |l| l.attributes["href"].value }.select { |l| l.match(/^http:*/) }
+      url = "http://example.com"
+      array_of_urls = [
+                       "http://one.example.com",
+                       "http://two.example.com",
+                       "http://three.example.com"
+                      ]
+      crawler.parse_page(url).should == array_of_urls
+    end
   end
 
   describe "it processes the pages in the seed URL list and any newly found pages until no more pages can be found" do
     #it "determines if a page can be added to the index"
-    it "retrieves each page that can be added to the index"
+    #it "retrieves each page that can be added to the index"
     it "parses the URLs on each page and saves them to a collection"
     it "prints a general error message if an exception is raised"
     it "prints a timeout error message if a TimeoutException is raised"
