@@ -60,14 +60,14 @@ describe Crawler do
     end
 
     it "parses the URL for a page that can be added to the index and returns a list of external links" do
-      array_of_urls = ["http://kentonnewby.com", 
-                       "http://kentonnewby.com/about", 
-                       "http://kentonnewby.com/profile", 
-                       "http://kentonnewby.com/bucket-list", 
-                       "http://kentonnewby.com/contact", 
-                       "http://kentonnewby.com", 
-                       "http://kentonnewby.com", 
-                       "http://kentonnewby.com/blog/categories/web-development", 
+      array_of_urls = ["http://kentonnewby.com",
+                       "http://kentonnewby.com/about",
+                       "http://kentonnewby.com/profile",
+                       "http://kentonnewby.com/bucket-list",
+                       "http://kentonnewby.com/contact",
+                       "http://kentonnewby.com",
+                       "http://kentonnewby.com",
+                       "http://kentonnewby.com/blog/categories/web-development",
                        "http://kentonnewby.com/blog/categories/ruby",
                        "http://kentonnewby.com/blog/categories/rails",
                        "http://kentonnewby.com/blog/categories/jquery",
@@ -145,7 +145,7 @@ describe Crawler do
 
   describe "#crawl" do
     it "crawls the list of URLs looking for new links if the URLs allow crawler to index the site" do
-      
+
     end
   end
 
@@ -158,5 +158,41 @@ describe Crawler do
     #it "writes the URLs for the newly found pages to the end of the .yml file"
     # File.open(URL_LIST, "w") { |file| YAML.dump(stuff, file) }
   end
+
+  describe "#add_to_or_update_index" do
+    it "adds new pages to the index"
+    # tries to find a page in the database that matches that url
+    # does a find_or_create_by_url
+    # if the page is a new_record?
+    #    #... index it
+    # else if the page is stale, 
+    #   #...update it
+    # else 
+    #     #...do nothing
+    #    
+    # Word.where("pages.url" => "http://kentonnewby.com")
+  end
+
+  describe "#index_page" do
+    # get all words on the page
+    # ********  need to see if word is new or already in the dB
+    # words.each do |word|
+    #   w = Word.new(:stem => word)
+    #   new_page = Page.new(:url => self.url, 
+    #                       :title => self.title
+    #                       :created_at => DateTime.now
+    #                       :updated_at => DateTime.now)
+    #   new_location = Location.new(:position => the word's index)
+    #   new_page.locations.push(new_location)
+    #   w.pages.push(new_page)
+    #
+    # end
+  end
+
+  describe "#update_page" do
+
+  end
+
+
 
 end
