@@ -5,10 +5,10 @@
 #
 require 'rspec'
 
-lib_pattern = File.join("./", "lib/**/*.rb")
-lib_files = Dir.glob(lib_pattern)
-lib_files.each do |f| 
-  require f 
+file_pattern = File.join("./", "*.rb")
+files_to_include = Dir.glob(file_pattern)
+files_to_include.each do |file| 
+  require file
 end
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration

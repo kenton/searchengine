@@ -1,0 +1,9 @@
+#Mongoid.load!("config/mongoid.yml")
+#
+development:
+  host: localhost
+  database: searchengine_development
+
+test:
+  host: localhost
+  database: searchengine_test

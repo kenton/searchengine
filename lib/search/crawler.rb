@@ -3,6 +3,11 @@ require 'robots'
 require 'net/http'
 require 'nokogiri'
 
+
+Mongoid.configure do |config|
+  config.master = Mongo::Connection.new.db("searchengine")
+end
+
 class Crawler
 
   USER_AGENT = "foo-spider"
