@@ -50,14 +50,16 @@ class Crawler
   def crawl
     new_pages = []
 
-      urls.each do |url|
-        add_to_index(url)
-        new_pages.concat(links_on_page(url))
-      end
+    urls.each do |url|
+      add_to_index(url)
+      new_pages.concat(links_on_page(url))
+    end
 
-      self.urls = new_pages
+    self.urls = new_pages.uniq
 
     save_newly_found_pages(new_pages)
+
+    new_pages.uniq
   end
 
   def add_to_index(url)

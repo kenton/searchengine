@@ -145,35 +145,31 @@ describe Crawler do
 
   describe "#crawl" do
     it "crawls the list of URLs looking for new links if the URLs allow crawler to index the site" do
+      crawler = Crawler.new
+      crawler.urls = ["http://kentonnewby.com"]
+      newly_found_pages = ["http://kentonnewby.com/about", "http://kentonnewby.com", "http://kentonnewby.com/contact", "http://twitter.com/kentonnewby"]
+      crawler.stub(:links_on_page).and_return(newly_found_pages)
 
+      crawler.crawl.should == newly_found_pages
     end
   end
 
-  describe "it processes the pages in the seed URL list and any newly found pages until no more pages can be found" do
-    #it "determines if a page can be added to the index"
-    #it "retrieves each page that can be added to the index"
-    #it "parses the URLs on each page and saves them to a collection"
-    it "prints a general error message if an exception is raised"
-    it "prints a timeout error message if a TimeoutException is raised"
-    #it "writes the URLs for the newly found pages to the end of the .yml file"
-    # File.open(URL_LIST, "w") { |file| YAML.dump(stuff, file) }
-  end
-
-  describe "#add_to_or_update_index" do
+  # tries to find a page in the database that matches that url
+  # does a find_or_create_by_url
+  # if the page is a new_record?
+  #    #... index it
+  # else if the page is stale, 
+  #   #...update it
+  # else 
+  #     #...do nothing
+  #    
+  # Word.where("pages.url" => "http://kentonnewby.com")
+  describe "#add_to_index" do
     it "adds new pages to the index"
-    # tries to find a page in the database that matches that url
-    # does a find_or_create_by_url
-    # if the page is a new_record?
-    #    #... index it
-    # else if the page is stale, 
-    #   #...update it
-    # else 
-    #     #...do nothing
-    #    
-    # Word.where("pages.url" => "http://kentonnewby.com")
+    it "updates pages that are already in the index"
   end
 
-  describe "#index_page" do
+  describe "#index_page"
     # get all words on the page
     # ********  need to see if word is new or already in the dB
     # words.each do |word|
@@ -187,11 +183,25 @@ describe Crawler do
     #   w.pages.push(new_page)
     #
     # end
-  end
 
-  describe "#update_page" do
+  describe "#update_page"
 
-  end
+
+
+
+
+
+
+  #describe "it processes the pages in the seed URL list and any newly found pages until no more pages can be found" do
+    #it "determines if a page can be added to the index"
+    #it "retrieves each page that can be added to the index"
+    #it "parses the URLs on each page and saves them to a collection"
+    it "prints a general error message if an exception is raised"
+    it "prints a timeout error message if a TimeoutException is raised"
+    #it "writes the URLs for the newly found pages to the end of the .yml file"
+    # File.open(URL_LIST, "w") { |file| YAML.dump(stuff, file) }
+  #end
+
 
 
 
