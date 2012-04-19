@@ -3,6 +3,9 @@
 # Require this file using `require "spec_helper.rb"` to ensure that it is only
 # loaded once.
 #
+require 'simplecov'
+SimpleCov.start
+
 require 'rspec'
 
 file_pattern = File.join("./", "*.rb")
