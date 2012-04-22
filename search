@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+
+require './searchengine'
+
+while true
+  puts "------------------"
+  puts "Enter a search term: "
+  search_term = gets
+  puts "------------------"
+  pages = Page.with_keyword(search_term.chomp)
+  
+  pages.each_with_index { |url, index| puts "#{index + 1}. #{url}" }
+
+  puts ""
+end

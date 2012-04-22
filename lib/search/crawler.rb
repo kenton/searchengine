@@ -51,8 +51,12 @@ class Crawler
     new_pages = []
 
     urls.each do |url|
-      add_to_index(url)
-      new_pages.concat(links_on_page(url))
+      begin
+        add_to_index(url)
+        new_pages.concat(links_on_page(url))
+      rescue
+        next
+      end
     end
 
     self.urls = new_pages.uniq
