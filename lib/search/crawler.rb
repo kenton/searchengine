@@ -63,8 +63,23 @@ class Crawler
   end
 
   def add_to_index(url)
-    File.open("./output.txt", "a+") do |file|
-      file.puts url
+    page = Page.find_or_initialize_by(:url => url)
+    if page.new_record?
+      # save new record to database
+      puts "Adding the following URL to the index: #{url}"
+      page.update_attributes!(:title      => page.title,
+                              :keywords   => page.keywords,
+                              :created_at => Time.now,
+                              :updated_at => Time.now)
+    else
+      # update existing record in database
+      puts "Updating the following URL in the index: #{url}"
+      page.keywords = nil
+      page.title    = nil
+      page.update_attributes!(:title      => page.title,
+                              :keywords   => page.keywords,
+                              :updated_at => Time.now)
+
     end
   end
 

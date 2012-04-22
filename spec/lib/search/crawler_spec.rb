@@ -158,14 +158,22 @@ describe Crawler do
   # does a find_or_create_by_url
   # if the page is a new_record?
   #    #... index it
-  # else if the page is stale, 
+  # else if the page is stale,
   #   #...update it
-  # else 
+  # else
   #     #...do nothing
-  #    
+  #
   # Word.where("pages.url" => "http://kentonnewby.com")
   describe "#add_to_index" do
-    it "adds new pages to the index"
+    it "adds new pages to the index" do
+      crawler = Crawler.new
+      new_page = Page.new(:url => 'http://somesite.com')
+      new_page.stub(:new_record?).and_return(true)
+      Page.should_receive(:find_or_create_by_url).and_return(new_page)
+      url = "http://somesite.com"
+
+      lambda { crawler.add_to_index(url) }.should change(Page, :count).by(1)
+    end
     it "updates pages that are already in the index"
   end
 
@@ -174,7 +182,7 @@ describe Crawler do
     # ********  need to see if word is new or already in the dB
     # words.each do |word|
     #   w = Word.new(:stem => word)
-    #   new_page = Page.new(:url => self.url, 
+    #   new_page = Page.new(:url => self.url,
     #                       :title => self.title
     #                       :created_at => DateTime.now
     #                       :updated_at => DateTime.now)

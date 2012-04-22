@@ -46,7 +46,15 @@ describe Page do
   end
 
   describe "#clean_text" do
-    it "removes newline characters"
+    it "removes newline characters" do
+      doc = Nokogiri::HTML(open('spec/support/newline_page.html'))
+      Nokogiri::HTML::Document.stub!(:parse)
+      Nokogiri::HTML::Document.should_receive(:parse).and_return(doc)
+      page = Page.new(:url => "http://example.com")
+      words = ["quick", "quick", "brown", "fox", "jumps", "over", "lazy", "dog"]
+
+      page.clean_text.should not_include("\n")
+    end
     it "removes multiple spaces"
     it "strips trailing spaces"
   end

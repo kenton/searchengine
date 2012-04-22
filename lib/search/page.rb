@@ -5,12 +5,16 @@ class Page
   include Mongoid::Document
   field :url
   field :title
-  embedded_in :word
+  field :keywords, :type => Array
   embeds_many :locations
   field :created_at, :type => DateTime
   field :updated_at, :type => DateTime
 
   COMMON_WORDS = YAML.load_file('./config/common.yml')
+
+  def keywords
+    @keywords ||= words_on_page
+  end
 
   def words_on_page
     response.search('script').each {|el| el.unlink}
@@ -33,7 +37,17 @@ class Page
     @response ||= Nokogiri::HTML(open(url))
   end
 
+
   def title
-    response.css('title').children.first.text
+    @title ||= response.css('title').children.first.text
+  end
+
+  def clean_text
+    response.text.gsub("\n", " ").squeeze(" ").strip.split(" ").map(&:downcase)
+  end
+
+  def self.with_keyword(search_term)
+    matching_pages = Page.all(:conditions => { :keywords => search_term })
+    matching_pages.map { |page| page.url }
   end
 end
