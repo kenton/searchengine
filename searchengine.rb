@@ -1,6 +1,5 @@
 require 'mongoid'
-#require 'robots'
-#require 'nokogiri'
+require './lib/search/mongoid'
 
 lib_rb_files = File.join("./lib/**", "*.rb")
 
