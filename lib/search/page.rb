@@ -1,6 +1,8 @@
+
+
 class Page
 
-  attr_accessor :response
+  attr_accessor :response, :links
 
   include Mongoid::Document
   field :url
@@ -46,8 +48,52 @@ class Page
     response.text.gsub("\n", " ").squeeze(" ").strip.split(" ").map(&:downcase)
   end
 
-  def self.with_keyword(search_term)
+  def self.search(search_term)
     matching_pages = Page.all(:conditions => { :keywords => search_term })
     matching_pages.map { |page| page.url }
+  end
+  
+  def links
+    @links ||= links_on_page
+  end
+
+  def links_on_page
+    #return [] unless allowed_to_crawl?(url)
+
+    webpage = Net::HTTP.get(URI(url))
+    parsed_page = Nokogiri::HTML(webpage)
+    all_anchor_tags = parsed_page.css('a')
+    all_links = all_anchor_tags.map { |tag| tag.attributes["href"].value unless tag.attributes["href"].nil? }
+
+    all_links.select do |link|
+      link.gsub!(/^\//, url + "/") if link.match(/^\/.*/) unless link.nil?
+      link.chop! if link.end_with?("/") unless link.nil?
+    end
+
+    all_links
+  end
+
+  # save new record to database
+  def add
+    puts "Adding the following URL to the index: #{url}"
+    update_attributes!(:title      => title,
+                            :keywords   => keywords,
+                            :created_at => Time.now,
+                            :updated_at => Time.now)
+  end
+
+  # update existing record in database
+  def update
+    puts "Updating the following URL in the index: #{url}"
+    keywords = nil
+    title    = nil
+    update_attributes!(:title      => title,
+                            :keywords   => keywords,
+                            :updated_at => Time.now)
+
+  end
+
+  def ignore
+    puts "Ignoring the following URL which was recently added/updated: #{url}"
   end
 end

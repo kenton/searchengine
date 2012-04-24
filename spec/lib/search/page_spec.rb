@@ -2,6 +2,10 @@ require 'spec_helper'
 
 describe Page do
 
+  describe "#keywords" do
+    it "memoizes the list of keywords on the page"
+  end
+
   describe "#words_on_page" do
     it "returns a lowercase list of the unique words on the page" do
       doc = Nokogiri::HTML(open('spec/support/test_page.html'))
@@ -45,28 +49,8 @@ describe Page do
     end
   end
 
-  describe "#clean_text" do
-    it "removes newline characters" do
-      doc = Nokogiri::HTML(open('spec/support/newline_page.html'))
-      Nokogiri::HTML::Document.stub!(:parse)
-      Nokogiri::HTML::Document.should_receive(:parse).and_return(doc)
-      page = Page.new(:url => "http://example.com")
-      words = ["quick", "quick", "brown", "fox", "jumps", "over", "lazy", "dog"]
-
-      page.clean_text.should not_include("\n")
-    end
-    it "removes multiple spaces"
-    it "strips trailing spaces"
-  end
-
-  describe "#remove_trailing_characters" do
-    it "removes trailing '.' from words"
-    it "removes trailing ':' from words"
-    it "removes trailing ',' from words"
-  end
-
-  describe "#filter_common_words" do
-    it "removes common words"
+  describe "#response" do
+    it "memoizes the response for an HTTP request"
   end
 
   describe "#title" do
@@ -78,5 +62,120 @@ describe Page do
 
       page.title.should == "My Test Page"
     end
+  end
+
+  describe "#clean_text" do
+    it "removes newline characters" do
+      doc = Nokogiri::HTML(open('spec/support/newline_page.html'))
+      Nokogiri::HTML::Document.stub!(:parse)
+      Nokogiri::HTML::Document.should_receive(:parse).and_return(doc)
+      page = Page.new(:url => "http://example.com")
+      words = ["quick", "quick", "brown", "fox", "jumps", "over", "lazy", "dog"]
+
+      page.clean_text.should_not include("\n")
+    end
+    it "removes multiple spaces"
+    it "strips trailing spaces"
+  end
+
+  describe ".search" do
+    it "returns a list of pages that match a single keyword"
+    it "returns a list of pages that match multiple keywords"
+    it "returns a list of pages that match a keyword phrase"
+  end
+
+  describe "#links" do
+    it "memoizes the list of links on the page"
+  end
+
+  describe "#links_on_page", :vcr do
+
+    before(:each) do
+      @page = Page.new(:url => "http://kentonnewby.com")
+    end
+
+    it "parses the URL for a page that can be added to the index and returns a list of external links" do
+      array_of_urls = ["http://kentonnewby.com",
+                       "http://kentonnewby.com/about",
+                       "http://kentonnewby.com/profile",
+                       "http://kentonnewby.com/bucket-list",
+                       "http://kentonnewby.com/contact",
+                       "http://kentonnewby.com",
+                       "http://kentonnewby.com",
+                       "http://kentonnewby.com/blog/categories/web-development",
+                       "http://kentonnewby.com/blog/categories/ruby",
+                       "http://kentonnewby.com/blog/categories/rails",
+                       "http://kentonnewby.com/blog/categories/jquery",
+                       "http://kentonnewby.com/blog/categories/backbonejs",
+                       "http://kentonnewby.com/blog/categories/nodejs",
+                       "http://kentonnewby.com/blog/categories/mobile-development",
+                       "http://kentonnewby.com/blog/categories/ios",
+                       "http://kentonnewby.com/blog/categories/mobile-web",
+                       "http://kentonnewby.com/blog/categories/business",
+                       "http://kentonnewby.com/blog/categories/marketing",
+                       "http://kentonnewby.com/blog/categories/sales",
+                       "http://kentonnewby.com/blog/categories/lifestyle-design",
+                       "http://kentonnewby.com/blog/categories/inner-game",
+                       "http://kentonnewby.com/blog/categories/productivity",
+                       "http://kentonnewby.com/blog/categories/inspirational",
+                       "http://kentonnewby.com/blog/categories/books",
+                       "http://feeds.feedburner.com/kentonnewby",
+                       "http://twitter.com/kentonnewby",
+                       "http://kentonnewby.com/quick-git-summaries-using-git-shortlog",
+                       "http://kentonnewby.com/blog/categories/git",
+                       "http://kentonnewby.com/quick-git-summaries-using-git-shortlog",
+                       "http://kentonnewby.com/benefits-of-tdd",
+                       "http://kentonnewby.com/blog/categories/rails",
+                       "http://kentonnewby.com/blog/categories/ruby",
+                       "http://kentonnewby.com/benefits-of-tdd",
+                       "http://kentonnewby.com/are-you-a-producer-or-a-consumer",
+                       "http://kentonnewby.com/blog/categories/inner-game",
+                       "http://kentonnewby.com/are-you-a-producer-or-a-consumer",
+                       "http://kentonnewby.com/amending-last-git-commit",
+                       "http://kentonnewby.com/blog/categories/git",
+                       "http://kentonnewby.com/amending-last-git-commit",
+                       "http://kentonnewby.com/ios-development-workflow",
+                       "http://kentonnewby.com/blog/categories/ios",
+                       "http://kentonnewby.com/blog/categories/mobile-development",
+                       "http://kentonnewby.com/ios-development-workflow",
+                       "http://kentonnewby.com/page/2",
+                       "http://kentonnewby.com/blog/archives",
+                       "http://kentonnewby.com/about",
+                       "http://codecanyon.net?ref=kentonnewby",
+                       "http://themeforest.net?ref=kentonnewby",
+                       "http://f52f6a2culudsoi0rj6a0h3rbu.hop.clickbank.net",
+                       "http://www.mailchimp.com",
+                       "http://www.railscasts.com",
+                       "http://www.peepcode.com",
+                       "http://www.destroyallsoftware.com/screencasts",
+                       "http://www.practicingruby.com",
+                       "http://www.startupsfortherestofus.com",
+                       "http://kentonnewby.com/privacy",
+                       "http://kentonnewby.com/earnings-disclaimer",
+                       "http://kentonnewby.com/terms-of-use",
+                       "http://kentonnewby.com/sitemap.xml",
+                       "http://octopress.org"
+                      ]
+
+      @page.links_on_page.should == array_of_urls
+    end
+
+    it "adds hostname to relative links relative links" do
+      @page.links.should include("http://kentonnewby.com/about")
+    end
+  end
+
+  describe "#add" do
+    it "outputs a message to STDOUT"
+    it "adds the page to the database"
+  end
+
+  describe "#update" do
+    it "outputs a message to STDOUT"
+    it "updates the page's info in the database"
+  end
+
+  describe "#ignore" do
+    it "outputs a message to STDOUT"
   end
 end
