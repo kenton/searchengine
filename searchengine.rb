@@ -1,5 +1,6 @@
 require 'mongoid'
-require './lib/search/mongoid'
+require './config/mongoid'
+require 'colored'
 
 lib_rb_files = File.join("./lib/**", "*.rb")
 

@@ -2,7 +2,8 @@
 # specs live under a `spec` directory, which RSpec adds to the `$LOAD_PATH`.
 # Require this file using `require "spec_helper.rb"` to ensure that it is only
 # loaded once.
-#
+
+ENV["SEARCHENGINE_ENV"] = 'test'
 require 'simplecov'
 SimpleCov.start
 
