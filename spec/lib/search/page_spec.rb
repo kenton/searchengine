@@ -3,7 +3,24 @@ require 'spec_helper'
 describe Page do
 
   describe "#keywords" do
-    it "memoizes the list of keywords on the page"
+    context "memoizes the list of keywords on the page" do
+      it "calls words_on_page method if @keywords isn't set" do
+        expected_keywords = ["foo", "bar", "baz"]
+        page = Page.new(:url => "http://kentonnewby.com")
+        page.stub(:words_on_page).and_return(expected_keywords)
+        page.should_receive(:words_on_page)
+
+        page.keywords.should == expected_keywords
+      end
+
+      it "returns @keywords if @keywords is set" do
+        expected_keywords = ["foo", "bar", "baz"]
+        page = Page.new(:url => "http://kentonnewby.com")
+        page.instance_variable_set('@keywords', expected_keywords)
+
+        page.keywords.should == expected_keywords
+      end
+    end
   end
 
   describe "#words_on_page" do
@@ -79,7 +96,15 @@ describe Page do
   end
 
   describe ".search" do
-    it "returns a list of pages that match a single keyword"
+    it "returns a list of pages that match a single keyword" do
+      page1 = Page.new(:url => "http://firstpage.com")
+      page2 = Page.new(:url => "http://secondpage.com")
+      pages = [page1, page2]
+      Page.should_receive(:all).and_return(pages)
+      search_result = pages.map { |p| p.url  }
+
+      Page.search("foobar").should == search_result
+    end
     it "returns a list of pages that match multiple keywords"
     it "returns a list of pages that match a keyword phrase"
   end

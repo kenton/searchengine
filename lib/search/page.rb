@@ -1,5 +1,3 @@
-
-
 class Page
 
   attr_accessor :response, :links
@@ -20,17 +18,9 @@ class Page
 
   def words_on_page
     response.search('script').each {|el| el.unlink}
-    words = response.text.gsub("\n", " ").squeeze(" ").strip.split(" ").map(&:downcase)
-    words.select do |word|
-      word.chop! if word.end_with?(".") or word.end_with?(":") or word.end_with?(",")
-    end
-
-    words.delete_if do |word|
-      COMMON_WORDS.include?(word) or
-        word.length > 25 or
-        word.to_i != 0
-    end
-
+    words = clean_text
+    words = remove_trailing_characters(words)
+    words = delete_common(words)
     words.uniq
   end
 
@@ -38,7 +28,6 @@ class Page
   def response
     @response ||= Nokogiri::HTML(open(url))
   end
-
 
   def title
     @title ||= response.css('title').children.first.text
@@ -52,14 +41,12 @@ class Page
     matching_pages = Page.all(:conditions => { :keywords => search_term })
     matching_pages.map { |page| page.url }
   end
-  
+
   def links
     @links ||= links_on_page
   end
 
   def links_on_page
-    #return [] unless allowed_to_crawl?(url)
-
     webpage = Net::HTTP.get(URI(url))
     parsed_page = Nokogiri::HTML(webpage)
     all_anchor_tags = parsed_page.css('a')
@@ -73,27 +60,46 @@ class Page
     all_links
   end
 
+  def remove_trailing_characters(words)
+    trailing_characters = %w{. : ,}
+    words.select do |word|
+      trailing_characters.each do |character|
+        word.chop! if word.end_with?(character)
+      end
+    end
+
+    words
+  end
+
+  def delete_common(words)
+    words.delete_if do |word|
+      COMMON_WORDS.include?(word) or
+        word.length > 25 or
+        word.to_i != 0
+    end
+  end
+
   # save new record to database
   def add
-    puts "Adding the following URL to the index: #{url}"
+    puts "Adding the following URL to the index: #{url}".green
     update_attributes!(:title      => title,
-                            :keywords   => keywords,
-                            :created_at => Time.now,
-                            :updated_at => Time.now)
+                       :keywords   => keywords,
+                       :created_at => Time.now,
+                       :updated_at => Time.now)
   end
 
   # update existing record in database
   def update
-    puts "Updating the following URL in the index: #{url}"
+    puts "Updating the following URL in the index: #{url}".yellow
     keywords = nil
     title    = nil
     update_attributes!(:title      => title,
-                            :keywords   => keywords,
-                            :updated_at => Time.now)
+                       :keywords   => keywords,
+                       :updated_at => Time.now)
 
   end
 
   def ignore
-    puts "Ignoring the following URL which was recently added/updated: #{url}"
+    puts "Ignoring the following URL which was recently added/updated: #{url}".red
   end
 end
