@@ -96,17 +96,20 @@ describe Page do
   end
 
   describe ".search" do
-    it "returns a list of pages that match a single keyword" do
-      page1 = Page.new(:url => "http://firstpage.com")
-      page2 = Page.new(:url => "http://secondpage.com")
-      pages = [page1, page2]
-      Page.should_receive(:all).and_return(pages)
-      search_result = pages.map { |p| p.url  }
+    let(:page1) { Page.new(:url => "http://firstpage.com") }
+    let(:page2) { Page.new(:url => "http://secondpage.com") }
 
-      Page.search("foobar").should == search_result
+    it "returns a list of pages that match a single keyword" do
+      Page.should_receive(:any_in).and_return([page1])
+
+      Page.search("foobar").should == ["http://firstpage.com"]
     end
-    it "returns a list of pages that match multiple keywords"
-    it "returns a list of pages that match a keyword phrase"
+
+    it "returns a list of pages that match a keyword phrase" do
+      Page.should_receive(:any_in).and_return([page1, page2])
+
+      Page.search("foobar").should == ["http://firstpage.com", "http://secondpage.com"]
+    end
   end
 
   describe "#links" do

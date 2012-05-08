@@ -38,7 +38,9 @@ class Page
   end
 
   def self.search(search_term)
-    matching_pages = Page.all(:conditions => { :keywords => search_term })
+    words = search_term.split(" ")
+    matching_pages = Page.any_in(:keywords => words)
+    #matching_pages = Page.all(:conditions => { :keywords => search_term })
     matching_pages.map { |page| page.url }
   end
 
@@ -101,5 +103,13 @@ class Page
 
   def ignore
     puts "Ignoring the following URL which was recently added/updated: #{url}".red
+  end
+
+  def stale?
+   updated_at < 3.days.ago
+  end
+
+  def fresh?
+    !new_record? && !stale?
   end
 end
